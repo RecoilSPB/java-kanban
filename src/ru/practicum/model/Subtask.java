@@ -1,3 +1,5 @@
+package ru.practicum.model;
+
 public class Subtask extends Task {
     private final int epicId;
 
@@ -13,7 +15,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "Subtask{" + super.toString() +
+        return "ru.practicum.model.Subtask{" + super.toString() +
                 " epicId=" + epicId +
                 "} ";
     }
