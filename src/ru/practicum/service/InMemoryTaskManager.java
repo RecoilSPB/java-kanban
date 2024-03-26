@@ -33,7 +33,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllTasks() {
         ArrayList<Integer> taskIds = new ArrayList<>(tasks.keySet());
-        for (Integer taskId :taskIds) {
+        for (Integer taskId : taskIds) {
             deleteTaskById(taskId);
         }
     }
@@ -71,7 +71,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllEpics() {
         ArrayList<Integer> epicIds = new ArrayList<>(epics.keySet());
-        for (Integer epicId : epicIds){
+        for (Integer epicId : epicIds) {
             deleteEpicById(epicId);
         }
     }
@@ -101,7 +101,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteEpicById(int epicId) {
         Epic epic = epics.get(epicId);
         epics.remove(epicId);
-        for (Subtask subtask : epic.getSubtasks()){
+        for (Subtask subtask : epic.getSubtasks()) {
             deleteSubtaskById(subtask.getId());
         }
     }
@@ -115,7 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllSubtasks() {
         ArrayList<Integer> subtaskIds = new ArrayList<>(subtasks.keySet());
-        for (Integer subtaskId : subtaskIds){
+        for (Integer subtaskId : subtaskIds) {
             deleteSubtaskById(subtaskId);
         }
     }
