@@ -32,10 +32,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        ArrayList<Integer> taskIds = new ArrayList<>(tasks.keySet());
-        for (Integer taskId : taskIds) {
-            deleteTaskById(taskId);
-        }
+        tasks.clear();
     }
 
     @Override
