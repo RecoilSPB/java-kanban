@@ -5,9 +5,9 @@ import ru.practicum.model.Task;
 import java.util.LinkedList;
 import java.util.List;
 
-public class InMemoryHistoryManager implements HistoryManager{
+public class InMemoryHistoryManager implements HistoryManager {
     private final List<Task> history;
-    private final static int SIZE = 10;
+    private static final int SIZE = 10;
 
     public InMemoryHistoryManager() {
         this.history = new LinkedList<>();
