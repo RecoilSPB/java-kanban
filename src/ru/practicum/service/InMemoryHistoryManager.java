@@ -2,27 +2,31 @@ package ru.practicum.service;
 
 import ru.practicum.model.Task;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final List<Task> history;
-    private static final int SIZE = 10;
+    private final HashMap<Integer, Task> history;
 
     public InMemoryHistoryManager() {
-        this.history = new LinkedList<>();
+        this.history = new LinkedHashMap<>();
     }
 
     @Override
     public void add(Task task) {
-        if (this.history.size() >= SIZE) {
-            this.history.remove(0);
+        if (this.history.containsKey(task.getId())) {
+            remove(task.getId());
         }
-        this.history.add(task);
+        this.history.put(task.getId(), task);
     }
 
     @Override
-    public List<Task> getHistory() {
-        return new LinkedList<>(history);
+    public void remove(int id) {
+        this.history.remove(id);
+    }
+
+    @Override
+    public HashMap<Integer, Task> getHistory() {
+        return new LinkedHashMap<>(history);
     }
 }
