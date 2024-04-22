@@ -16,10 +16,12 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (this.history.containsKey(task.getId())) {
-            remove(task.getId());
+        if (task != null) {
+            if (this.history.containsKey(task.getId())){
+                remove(task.getId());
+            }
+            this.history.put(task.getId(), task);
         }
-        this.history.put(task.getId(), task);
     }
 
     @Override
