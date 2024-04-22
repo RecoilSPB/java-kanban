@@ -158,7 +158,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public HashMap<Integer, Task> getHistory() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 

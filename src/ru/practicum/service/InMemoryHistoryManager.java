@@ -4,6 +4,8 @@ import ru.practicum.model.Task;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private final HashMap<Integer, Task> history;
@@ -26,7 +28,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public HashMap<Integer, Task> getHistory() {
-        return new LinkedHashMap<>(history);
+    public List<Task> getHistory() {
+        return new LinkedList<>(history.values());
     }
 }

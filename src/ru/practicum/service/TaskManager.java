@@ -4,7 +4,6 @@ import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
 
-import java.util.HashMap;
 import java.util.List;
 
 public interface TaskManager {
@@ -50,5 +49,5 @@ public interface TaskManager {
     // Получение списка всех подзадач определённого эпика
     List<Subtask> getSubtasksByEpicId(int epicId);
 
-    HashMap<Integer, Task> getHistory();
+    List<Task> getHistory();
 }
