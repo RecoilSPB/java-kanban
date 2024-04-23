@@ -4,12 +4,12 @@ import java.util.Objects;
 
 public class Node<E> {
     private Node<E> prev;
-    private E e;
+    private E value;
     private Node<E> next;
 
     public Node(Node<E> prev, E e, Node<E> next) {
         this.prev = prev;
-        this.e = e;
+        this.value = e;
         this.next = next;
     }
 
@@ -21,12 +21,12 @@ public class Node<E> {
         this.prev = prev;
     }
 
-    public E getE() {
-        return e;
+    public E getValue() {
+        return value;
     }
 
-    public void setE(E e) {
-        this.e = e;
+    public void setValue(E value) {
+        this.value = value;
     }
 
     public Node<E> getNext() {
@@ -42,11 +42,13 @@ public class Node<E> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Node<?> node = (Node<?>) o;
-        return Objects.equals(next, node.next) && Objects.equals(e, node.e) && Objects.equals(prev, node.prev);
+        return Objects.equals(next, node.next) &&
+                Objects.equals(value, node.value) &&
+                Objects.equals(prev, node.prev);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(next, e, prev);
+        return Objects.hash(next, value, prev);
     }
 }

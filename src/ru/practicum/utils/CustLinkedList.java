@@ -30,7 +30,7 @@ public class CustLinkedList {
         }
     }
 
-    public void unlink(int id) {
+    public void removeNode(int id) {
         Node<Task> x = history.get(id);
         final Node<Task> next = x.getNext();
         final Node<Task> prev = x.getPrev();
@@ -48,19 +48,15 @@ public class CustLinkedList {
             next.setPrev(prev);
             x.setNext(null);
         }
-        x.setE(null);
+        x.setValue(null);
         history.remove(id);
-    }
-
-    public void removeNode(int id) {
-        unlink(id);
     }
 
     public List<Task> getTasks() {
         List<Task> historyList = new ArrayList<>();
         Node<Task> item = first;
         while (item != null) {
-            historyList.add(item.getE());
+            historyList.add(item.getValue());
             item = item.getNext();
         }
         return historyList;

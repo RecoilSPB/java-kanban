@@ -47,8 +47,8 @@ class InHistoryManagerTest {
         custLinkedList.linkLast(task3);
         Node<Task> testTask1 = custLinkedList.getHashMap().get(task1.getId());
         Node<Task> testTask2 = custLinkedList.getHashMap().get(task3.getId());
-        assertEquals(task2, testTask1.getNext().getE());
-        assertEquals(task2, testTask2.getPrev().getE());
+        assertEquals(task2, testTask1.getNext().getValue());
+        assertEquals(task2, testTask2.getPrev().getValue());
     }
 
     @Test
@@ -65,9 +65,9 @@ class InHistoryManagerTest {
         custLinkedList.linkLast(task1);
         custLinkedList.linkLast(task2);
         custLinkedList.linkLast(task3);
-        custLinkedList.unlink(2);
-        assertEquals(task1, custLinkedList.getNode(3).getPrev().getE());
-        assertEquals(task3, custLinkedList.getNode(1).getNext().getE());
+        custLinkedList.removeNode(2);
+        assertEquals(task1, custLinkedList.getNode(3).getPrev().getValue());
+        assertEquals(task3, custLinkedList.getNode(1).getNext().getValue());
     }
 
     @Test
