@@ -1,28 +1,26 @@
 package ru.practicum.service;
 
 import ru.practicum.model.Task;
+import ru.practicum.utils.CustLinkedList;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final List<Task> history;
-    private static final int SIZE = 10;
 
-    public InMemoryHistoryManager() {
-        this.history = new LinkedList<>();
-    }
+    private final CustLinkedList myLinkedList = new CustLinkedList();
 
     @Override
     public void add(Task task) {
-        if (this.history.size() >= SIZE) {
-            this.history.remove(0);
-        }
-        this.history.add(task);
+        myLinkedList.linkLast(task);
     }
 
     @Override
     public List<Task> getHistory() {
-        return new LinkedList<>(history);
+        return myLinkedList.getTasks();
+    }
+
+    @Override
+    public void remove(int id) {
+        myLinkedList.removeNode(id);
     }
 }
