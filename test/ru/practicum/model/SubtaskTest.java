@@ -2,6 +2,7 @@ package ru.practicum.model;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ru.practicum.enums.TaskStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -11,7 +12,7 @@ public class SubtaskTest {
 
     @BeforeAll
     static void setup(){
-        epic = new Epic("Title Epic", "Description", TaskStatus.NEW);
+        epic = new Epic("Title Epic", "Description");
         epic.setId(1);
     }
 
@@ -22,7 +23,7 @@ public class SubtaskTest {
         String description = "Description";
         TaskStatus status = TaskStatus.NEW;
 
-        Subtask subtask = new Subtask(title, description, status, epic);
+        Subtask subtask = new Subtask(title, description, epic);
         subtask.setId(id);
         assertEquals(id, subtask.getId(), "Id Epic должен соответствовать: " + id);
         assertEquals(title, subtask.getName(), "Название Epic должен соответствовать: " + title);
@@ -33,8 +34,8 @@ public class SubtaskTest {
 
     @Test
     void subtaskCreationAndEquality() {
-        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", TaskStatus.NEW, epic);
-        Subtask subtask2 = new Subtask("Subtask 1", "Description 1", TaskStatus.NEW, epic);
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic);
+        Subtask subtask2 = new Subtask("Subtask 1", "Description 1", epic);
         subtask1.setId(1);
         subtask2.setId(1);
         assertEquals(subtask1, subtask2, "Subtasks должны быть равными, когда их родители равны.");
