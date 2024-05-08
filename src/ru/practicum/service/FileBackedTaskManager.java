@@ -96,9 +96,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     @Override
     public Subtask getSubtaskById(int id) {
-        Subtask Subtask = super.getSubtaskById(id);
+        Subtask subtask = super.getSubtaskById(id);
         save();
-        return Subtask;
+        return subtask;
     }
 
     //создание задач
@@ -143,8 +143,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public boolean updateSubtask(Subtask Subtask) {
-        boolean isUpdateSubtask = super.updateSubtask(Subtask);
+    public boolean updateSubtask(Subtask subtask) {
+        boolean isUpdateSubtask = super.updateSubtask(subtask);
         if (isUpdateSubtask) {
             save();
         }
@@ -239,8 +239,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
                 case "SUBTASK" -> {
                     int epicId = parts.length > 5 ? Integer.parseInt(parts[5]) : 0;
-                    Subtask Subtask = createSubtask(new Subtask(name, description, epics.get(epicId)));
-                    subtasks.put(id, Subtask);
+                    Subtask subtask = createSubtask(new Subtask(name, description, epics.get(epicId)));
+                    subtasks.put(id, subtask);
                 }
                 default -> throw new IllegalArgumentException("Тип не существует: " + type);
             }
