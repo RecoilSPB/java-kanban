@@ -46,11 +46,10 @@ public class FileBackedTaskManagerTest {
         File tempFile = new File(resourceDirectoryPath, "export.csv");
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
 
-        Task task1 = fileBackedTaskManager.createTask(new Task("Task1", "Description task1", TaskStatus.NEW));
+        fileBackedTaskManager.createTask(new Task("Task1", "Description task1", TaskStatus.NEW));
         Epic epic1 = fileBackedTaskManager.createEpic(new Epic("Epic2", "Description epic2"));
         Subtask subTask1 = fileBackedTaskManager.createSubtask(new Subtask("Sub Task2", "Description sub task3", epic1));
 
-        fileBackedTaskManager.getTaskById(task1.getId());
         fileBackedTaskManager.getEpicById(epic1.getId());
         fileBackedTaskManager.getSubtaskById(subTask1.getId());
 
@@ -69,8 +68,7 @@ public class FileBackedTaskManagerTest {
             throw new RuntimeException(e);
         }
 
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFileImport);
-        fileBackedTaskManager.loadFromFile(tempFileImport);
+        FileBackedTaskManager fileBackedTaskManager = FileBackedTaskManager.loadFromFile(tempFileImport);
 
         List<Task> loadedTasks = new ArrayList<>(fileBackedTaskManager.getAllTasks());
         List<Epic> loadedEpics = new ArrayList<>(fileBackedTaskManager.getAllEpics());

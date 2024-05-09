@@ -11,17 +11,17 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private int taskIdCounter; // Переменная для генерации уникальных идентификаторов
-    protected final HashMap<Integer, Task> tasks;
-    protected final HashMap<Integer, Epic> epics;
-    protected final HashMap<Integer, Subtask> subtasks;
-    protected final HistoryManager historyManager;
+    protected static HashMap<Integer, Task> tasks = null;
+    protected static HashMap<Integer, Epic> epics = null;
+    protected static HashMap<Integer, Subtask> subtasks = null;
+    protected static HistoryManager historyManager = null;
 
     public InMemoryTaskManager() {
         taskIdCounter = 1; // Начальное значение счетчика
-        this.tasks = new HashMap<>();
-        this.epics = new HashMap<>();
-        this.subtasks = new HashMap<>();
-        this.historyManager = Managers.getDefaultHistory();
+        tasks = new HashMap<>();
+        epics = new HashMap<>();
+        subtasks = new HashMap<>();
+        historyManager = Managers.getDefaultHistory();
     }
 
     // Методы для ru.practicum.model.Task

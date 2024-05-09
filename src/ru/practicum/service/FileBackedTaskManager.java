@@ -4,14 +4,19 @@ import ru.practicum.enums.TaskStatus;
 import ru.practicum.enums.TaskType;
 import ru.practicum.exceptions.ManagerLoadException;
 import ru.practicum.exceptions.ManagerSaveException;
-import ru.practicum.model.*;
+import ru.practicum.model.Epic;
+import ru.practicum.model.Subtask;
+import ru.practicum.model.Task;
+import ru.practicum.utils.HistoryMapper;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
@@ -20,13 +25,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    public void loadFromFile(File file) throws ManagerLoadException {
+    public static FileBackedTaskManager loadFromFile(File file) throws ManagerLoadException {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(file);
         try {
             String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
             String[] lines = content.split("\n");
             int maxIdInFile = getMaxIdInFile(lines);
-            fileBackedTaskManager.setStartGenerateTaskId(maxIdInFile + 1);
             boolean isHistory = false;
             for (int i = 1; i < lines.length; i++) {
                 if (lines[i].isBlank()) {
@@ -34,9 +38,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     continue;
                 }
                 if (!isHistory) {
-                    fromString(lines[i]);
+                    fileBackedTaskManager.fromString(lines[i]);
                 } else {
-                    List<Integer> historyList = historyFromString(lines[i]);
+                    List<Integer> historyList = HistoryMapper.historyFromString(lines[i]);
                     for (Integer taskId : historyList) {
                         if (tasks.containsKey(taskId)) {
                             historyManager.add(tasks.get(taskId));
@@ -48,13 +52,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
-            for (Subtask subtask : subtasks.values()) {
-                int epicId = subtask.getEpicId();
-                Epic epic = epics.get(epicId);
-                if (epic != null) {
-                    epic.addSubtask(subtask);
-                }
-            }
+            fileBackedTaskManager.setStartGenerateTaskId(maxIdInFile + 1);
+            return fileBackedTaskManager;
         } catch (IOException e) {
             throw new ManagerLoadException("Произошла ошибка при чтении файла", e);
         }
@@ -170,26 +169,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    private static String historyToString(List<Task> history) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < history.size(); i++) {
-            builder.append(history.get(i).getId());
-            if (i < history.size() - 1) {
-                builder.append(", ");
-            }
-        }
-        return builder.toString();
-    }
-
-    private static List<Integer> historyFromString(String value) {
-        List<Integer> historyIds = new ArrayList<>();
-        String[] idTasks = value.split(", ");
-        for (String id : idTasks) {
-            historyIds.add(Integer.parseInt(id));
-        }
-        return historyIds;
-    }
-
     private void save() {
         List<Task> allTask = new ArrayList<>();
         allTask.addAll(getAllTasks());
@@ -209,7 +188,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 );
             }
             if (!getHistory().isEmpty()) {
-                fileWriter.write("\n" + historyToString(getHistory()));
+                fileWriter.write("\n" + HistoryMapper.historyToString(getHistory()));
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Произошла ошибка во время записи в файл.", e);
@@ -222,25 +201,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             if (parts.length < 4) {
                 throw new IllegalArgumentException("Неверный формат задачи");
             }
-            int id = Integer.parseInt(parts[0]);
-            String type = parts[1];
+            TaskType type = TaskType.valueOf(parts[1]);
             String name = parts[2];
             TaskStatus status = TaskStatus.valueOf(parts[3]);
             String description = parts.length > 4 ? parts[4] : "";
             switch (type) {
-                case "TASK" -> {
-                    Task task = createTask(new Task(name, description, TaskStatus.NEW));
-                    tasks.put(id, task);
+                case TASK -> {
+                    Task task = new Task(name, description, status);
+                    createTask(task);
                 }
-                case "EPIC" -> {
-                    Epic epic = createEpic(new Epic(name, description));
+                case EPIC -> {
+                    Epic epic = new Epic(name, description);
                     epic.setStatus(status);
-                    epics.put(id, epic);
+                    createEpic(epic);
                 }
-                case "SUBTASK" -> {
+                case SUBTASK -> {
                     int epicId = parts.length > 5 ? Integer.parseInt(parts[5]) : 0;
-                    Subtask subtask = createSubtask(new Subtask(name, description, epics.get(epicId)));
-                    subtasks.put(id, subtask);
+                    Subtask subtask = new Subtask(name, description, epics.get(epicId));
+                    subtask.setStatus(status);
+                    createSubtask(subtask);
                 }
                 default -> throw new IllegalArgumentException("Тип не существует: " + type);
             }
@@ -249,7 +228,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private int getMaxIdInFile(String[] lines) {
+    private static int getMaxIdInFile(String[] lines) {
         int maxId = 1;
         for (int i = 1; i < lines.length; i++) {
             if (lines[i].isBlank()) {
