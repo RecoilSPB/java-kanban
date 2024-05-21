@@ -29,7 +29,7 @@ public class SubtaskTest {
         assertEquals(title, subtask.getName(), "Название Epic должен соответствовать: " + title);
         assertEquals(description, subtask.getDescription(), "Описание Epic должен соответствовать: " + description);
         assertEquals(status, subtask.getStatus(), "Статус Epic должен соответствовать:" + status);
-        assertNotEquals(subtask.getEpicId(), "", "Subtask.getEpicId не должен быть пустым.");
+        assertNotEquals(subtask.getEpicId(), 0, "Subtask.getEpicId не должен быть пустым.");
     }
 
     @Test

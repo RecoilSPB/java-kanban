@@ -24,7 +24,7 @@ class EpicSubtaskTest {
         ArrayList<Subtask> listSubtask = new ArrayList<>();
         listSubtask.add(subtask);
         assertEquals(epic.getId(), subtask.getEpicId(), "Epic.id должен быть равен Subtast.epicId");
-        assertEquals(epic.getSubtasks().get(0), subtask, "Subtask в листе Epic должен быть равен объекту Subtask");
+        assertEquals(epic.getSubtasks().getFirst(), subtask, "Subtask в листе Epic должен быть равен объекту Subtask");
         assertEquals(listSubtask, epic.getSubtasks(), "Лист Subtask должны быть равны");
     }
 

@@ -8,6 +8,7 @@ import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
 import ru.practicum.utils.HistoryMapper;
+import ru.practicum.utils.TaskMapper;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -38,7 +39,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     continue;
                 }
                 if (!isHistory) {
-                    fileBackedTaskManager.fromString(lines[i]);
+                    Task task = TaskMapper.fromString(lines[i]);
+                    switch (TaskMapper.getTaskType(task)) {
+                        case TASK -> {
+                            fileBackedTaskManager.createTask(task);
+                        }
+                        case EPIC -> {
+                            fileBackedTaskManager.createEpic((Epic) task);
+                        }
+                        case SUBTASK -> {
+                            fileBackedTaskManager.createSubtask((Subtask) task);
+                            fileBackedTaskManager.epics.get(((Subtask) task).getEpicId()).addSubtask((Subtask) task);
+                        }
+                        default -> throw new IllegalArgumentException("Тип не существует: " + TaskMapper.getTaskType(task));
+                    }
                 } else {
                     List<Integer> historyList = HistoryMapper.historyFromString(lines[i]);
                     for (Integer taskId : historyList) {
@@ -176,55 +190,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         allTask.addAll(getAllSubtasks());
         allTask.sort(Comparator.comparingInt(Task::getId));
         try (FileWriter fileWriter = new FileWriter(file.toString(), StandardCharsets.UTF_8)) {
-            fileWriter.write("id,type,name,status,description,epic\n");
-            for (Task task : allTask) {
-                fileWriter.write(String.format("%d,%s,%s,%s,%s,%s" + "\n",
-                        task.getId(),
-                        getTaskType(task),
-                        task.getName(),
-                        task.getStatus(),
-                        task.getDescription(),
-                        task instanceof Subtask ? ((Subtask) task).getEpicId() : "")
-                );
+            if (!allTask.isEmpty()) {
+                fileWriter.write(TaskMapper.taskToString(allTask));
             }
             if (!getHistory().isEmpty()) {
                 fileWriter.write("\n" + HistoryMapper.historyToString(getHistory()));
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Произошла ошибка во время записи в файл.", e);
-        }
-    }
-
-    private void fromString(String value) {
-        try {
-            String[] parts = value.split(",");
-            if (parts.length < 4) {
-                throw new IllegalArgumentException("Неверный формат задачи");
-            }
-            TaskType type = TaskType.valueOf(parts[1]);
-            String name = parts[2];
-            TaskStatus status = TaskStatus.valueOf(parts[3]);
-            String description = parts.length > 4 ? parts[4] : "";
-            switch (type) {
-                case TASK -> {
-                    Task task = new Task(name, description, status);
-                    createTask(task);
-                }
-                case EPIC -> {
-                    Epic epic = new Epic(name, description);
-                    epic.setStatus(status);
-                    createEpic(epic);
-                }
-                case SUBTASK -> {
-                    int epicId = parts.length > 5 ? Integer.parseInt(parts[5]) : 0;
-                    Subtask subtask = new Subtask(name, description, epics.get(epicId));
-                    subtask.setStatus(status);
-                    createSubtask(subtask);
-                }
-                default -> throw new IllegalArgumentException("Тип не существует: " + type);
-            }
-        } catch (Exception e) {
-            throw new ManagerLoadException("Произошла ошибка во время парсинга строки из файла.");
         }
     }
 
@@ -239,15 +212,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             maxId = Math.max(maxId, id);
         }
         return maxId;
-    }
-
-    private Object getTaskType(Task task) {
-        if (task instanceof Epic) {
-            return TaskType.EPIC;
-        } else if (task instanceof Subtask) {
-            return TaskType.SUBTASK;
-        } else {
-            return TaskType.TASK;
-        }
     }
 }
