@@ -2,6 +2,9 @@ package ru.practicum.model;
 
 import ru.practicum.enums.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
     private final int epicId;
 
@@ -9,6 +12,12 @@ public class Subtask extends Task {
         super(name, description, TaskStatus.NEW);
         this.epicId = epic.getId();
         epic.addSubtask(this);
+    }
+
+    public Subtask(String name, String description, Integer epicId, LocalDateTime startTime, Duration duration) {
+        super(name, description, TaskStatus.NEW, startTime, duration);
+        this.epicId = epicId;
+//        epic.addSubtask(this);
     }
 
     public int getEpicId() {
