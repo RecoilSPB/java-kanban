@@ -1,10 +1,12 @@
 package ru.practicum.model;
 
+import ru.practicum.enums.TaskStatus;
+
 public class Subtask extends Task {
     private final int epicId;
 
-    public Subtask(String name, String description, TaskStatus status, Epic epic) {
-        super(name, description, status);
+    public Subtask(String name, String description, Epic epic) {
+        super(name, description, TaskStatus.NEW);
         this.epicId = epic.getId();
         epic.addSubtask(this);
     }
@@ -15,8 +17,12 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        return "ru.practicum.model.Subtask{" + super.toString() +
-                " epicId=" + epicId +
-                "} ";
+        return getClass().getName() + "{" +
+                "id='" + getId() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status=" + getStatus() +
+                ", epicId='" + epicId + '\'' +
+                '}';
     }
 }

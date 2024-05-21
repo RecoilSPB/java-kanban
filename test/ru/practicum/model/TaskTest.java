@@ -1,6 +1,8 @@
 package ru.practicum.model;
 
 import org.junit.jupiter.api.Test;
+import ru.practicum.enums.TaskStatus;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskTest {
@@ -12,7 +14,7 @@ class TaskTest {
         String description = "Description";
         TaskStatus status = TaskStatus.NEW;
 
-        Epic epic = new Epic(title, description, status);
+        Epic epic = new Epic(title, description);
         epic.setId(id);
 
         assertEquals(id, epic.getId(), "Id Epic должен соответствовать: " + id);

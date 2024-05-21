@@ -1,5 +1,7 @@
 package ru.practicum.model;
 
+import ru.practicum.enums.TaskStatus;
+
 import java.util.Objects;
 
 public class Task {
@@ -65,7 +67,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "ru.practicum.model.Task{" +
+        return "Task{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

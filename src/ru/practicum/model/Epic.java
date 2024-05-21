@@ -1,12 +1,14 @@
 package ru.practicum.model;
 
+import ru.practicum.enums.TaskStatus;
+
 import java.util.ArrayList;
 
 public class Epic extends Task {
     private final ArrayList<Subtask> subtasks;
 
-    public Epic(String name, String description, TaskStatus status) {
-        super(name, description, status);
+    public Epic(String name, String description) {
+        super(name, description, TaskStatus.NEW);
         subtasks = new ArrayList<>();
     }
 
@@ -24,8 +26,12 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "ru.practicum.model.Epic{" + super.toString() +
-                " subtasks=" + subtasks +
-                "} ";
+        return getClass().getName() + "{" +
+                "id='" + getId() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status=" + getStatus() +
+                ", subtasks=" + subtasks +
+                '}';
     }
 }

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
-import ru.practicum.model.TaskStatus;
+import ru.practicum.enums.TaskStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -64,7 +64,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void createAndGetEpic() {
-        Epic epic = new Epic("Sample Epic", "Description", TaskStatus.NEW);
+        Epic epic = new Epic("Sample Epic", "Description");
 
         taskManager.createEpic(epic);
         Epic retrievedEpic = taskManager.getEpicById(epic.getId());
@@ -77,7 +77,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void updateEpic() {
-        Epic epic = new Epic("Sample Epic", "Description", TaskStatus.NEW);
+        Epic epic = new Epic("Sample Epic", "Description");
 
         taskManager.createEpic(epic);
 
@@ -95,7 +95,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void deleteEpic() {
-        Epic epic = new Epic("Sample Epic", "Description", TaskStatus.NEW);
+        Epic epic = new Epic("Sample Epic", "Description");
 
         taskManager.createEpic(epic);
         assertNotNull(taskManager.getEpicById(epic.getId()));
@@ -106,10 +106,10 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void createAndGetSubtask() {
-        Epic epic = new Epic("Sample Epic", "Description", TaskStatus.NEW);
+        Epic epic = new Epic("Sample Epic", "Description");
         taskManager.createEpic(epic);
 
-        Subtask subtask = new Subtask("Sample Subtask", "Description", TaskStatus.NEW, epic);
+        Subtask subtask = new Subtask("Sample Subtask", "Description", epic);
 
         taskManager.createSubtask(subtask);
         Subtask retrievedSubtask = taskManager.getSubtaskById(subtask.getId());
@@ -122,10 +122,10 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void updateSubtask() {
-        Epic epic = new Epic("Sample Epic", "Description", TaskStatus.NEW);
+        Epic epic = new Epic("Sample Epic", "Description");
         taskManager.createEpic(epic);
 
-        Subtask subtask = new Subtask("Sample Subtask", "Description", TaskStatus.NEW, epic);
+        Subtask subtask = new Subtask("Sample Subtask", "Description", epic);
         taskManager.createSubtask(subtask);
 
         subtask.setName("Updated Subtask Title");
@@ -143,10 +143,10 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void deleteSubtask() {
-        Epic epic = new Epic("Sample Epic", "Description", TaskStatus.NEW);
+        Epic epic = new Epic("Sample Epic", "Description");
         taskManager.createEpic(epic);
 
-        Subtask subtask = new Subtask("Sample Subtask", "Description", TaskStatus.NEW, epic);
+        Subtask subtask = new Subtask("Sample Subtask", "Description", epic);
         taskManager.createSubtask(subtask);
 
         subtask.setStatus(TaskStatus.DONE);
@@ -165,10 +165,10 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void deleteEpicLinkSubtask() {
-        Epic epic = new Epic("Sample Epic", "Description", TaskStatus.NEW);
+        Epic epic = new Epic("Sample Epic", "Description");
         taskManager.createEpic(epic);
 
-        Subtask subtask = new Subtask("Sample Subtask", "Description", TaskStatus.NEW, epic);
+        Subtask subtask = new Subtask("Sample Subtask", "Description", epic);
         taskManager.createSubtask(subtask);
 
         assertNotNull(taskManager.getEpicById(epic.getId()));
@@ -181,7 +181,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getAllAndDeletAllTask() {
+    void getAllAndDeleteAllTask() {
         for (int i = 0; i < 15; i++) {
             Task task = new Task("Task" + i, "Description", TaskStatus.NEW);
             taskManager.createTask(task);
@@ -195,9 +195,9 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getAllAndDeletAllEpic() {
+    void getAllAndDeleteAllEpic() {
         for (int i = 0; i < 15; i++) {
-            Epic epic = new Epic("Epic" + i, "Description", TaskStatus.NEW);
+            Epic epic = new Epic("Epic" + i, "Description");
             taskManager.createEpic(epic);
         }
 
@@ -209,11 +209,11 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getAllAndDeletAllSubtask() {
-        Epic epic = new Epic("Epic", "Description", TaskStatus.NEW);
+    void getAllAndDeleteAllSubtask() {
+        Epic epic = new Epic("Epic", "Description");
         taskManager.createEpic(epic);
         for (int i = 0; i < 15; i++) {
-            Subtask subtask = new Subtask("Subtask" + i, "Description", TaskStatus.NEW, epic);
+            Subtask subtask = new Subtask("Subtask" + i, "Description", epic);
             taskManager.createSubtask(subtask);
         }
 
@@ -226,11 +226,11 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void deletEpicToAllSubtask() {
-        Epic epic = new Epic("Epic", "Description", TaskStatus.NEW);
+    void deleteEpicToAllSubtask() {
+        Epic epic = new Epic("Epic", "Description");
         taskManager.createEpic(epic);
         for (int i = 0; i < 15; i++) {
-            Subtask subtask = new Subtask("Subtask" + i, "Description", TaskStatus.NEW, epic);
+            Subtask subtask = new Subtask("Subtask" + i, "Description", epic);
             taskManager.createSubtask(subtask);
         }
 
@@ -246,7 +246,7 @@ public class InMemoryTaskManagerTest {
     @Test
     void getHistoryTaskManager() {
         for (int i = 0; i < 15; i++) {
-            Epic epic = new Epic("Epic" + i, "Description", TaskStatus.NEW);
+            Epic epic = new Epic("Epic" + i, "Description");
             taskManager.createEpic(epic);
         }
 
@@ -255,11 +255,11 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void getStatusInProgressEpic() {
-        Epic epic = new Epic("Epic", "Description", TaskStatus.NEW);
+        Epic epic = new Epic("Epic", "Description");
         taskManager.createEpic(epic);
         Subtask subtask = null;
         for (int i = 0; i < 15; i++) {
-            subtask = new Subtask("Subtask" + i, "Description", TaskStatus.NEW, epic);
+            subtask = new Subtask("Subtask" + i, "Description", epic);
             taskManager.createSubtask(subtask);
         }
 

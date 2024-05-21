@@ -3,7 +3,7 @@ package ru.practicum.service;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
-import ru.practicum.model.TaskStatus;
+import ru.practicum.enums.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,17 +11,17 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private int taskIdCounter; // Переменная для генерации уникальных идентификаторов
-    private final HashMap<Integer, Task> tasks;
-    private final HashMap<Integer, Epic> epics;
-    private final HashMap<Integer, Subtask> subtasks;
-    private final HistoryManager historyManager;
+    protected HashMap<Integer, Task> tasks;
+    protected HashMap<Integer, Epic> epics;
+    protected HashMap<Integer, Subtask> subtasks;
+    protected static HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         taskIdCounter = 1; // Начальное значение счетчика
-        this.tasks = new HashMap<>();
-        this.epics = new HashMap<>();
-        this.subtasks = new HashMap<>();
-        this.historyManager = Managers.getDefaultHistory();
+        tasks = new HashMap<>();
+        epics = new HashMap<>();
+        subtasks = new HashMap<>();
+        historyManager = Managers.getDefaultHistory();
     }
 
     // Методы для ru.practicum.model.Task
@@ -43,15 +43,20 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createTask(Task task) {
+    public Task createTask(Task task) {
         task.setId(taskIdCounter);
         tasks.put(taskIdCounter, task);
-        taskIdCounter++;
+        generateTaskId();
+        return task;
     }
 
     @Override
-    public void updateTask(Task updatedTask) {
-        tasks.put(updatedTask.getId(), updatedTask);
+    public boolean updateTask(Task updatedTask) {
+        if (tasks.containsKey(updatedTask.getId())) {
+            tasks.put(updatedTask.getId(), updatedTask);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -81,17 +86,22 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createEpic(Epic epic) {
+    public Epic createEpic(Epic epic) {
         epic.setId(taskIdCounter);
         epics.put(taskIdCounter, epic);
-        taskIdCounter++;
+        generateTaskId();
+        return epic;
     }
 
     @Override
-    public void updateEpic(Epic epic) {
-        TaskStatus status = calculateEpicStatus(epic);
-        epic.setStatus(status);
-        tasks.put(epic.getId(), epic);
+    public boolean updateEpic(Epic epic) {
+        if (epics.containsKey(epic.getId())) {
+            TaskStatus status = calculateEpicStatus(epic);
+            epic.setStatus(status);
+            tasks.put(epic.getId(), epic);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -125,18 +135,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void createSubtask(Subtask subtask) {
+    public Subtask createSubtask(Subtask subtask) {
         subtask.setId(taskIdCounter);
         subtasks.put(taskIdCounter, subtask);
-        taskIdCounter++;
+        generateTaskId();
+        return subtask;
     }
 
     @Override
-    public void updateSubtask(Subtask subtask) {
-        tasks.put(subtask.getId(), subtask);
-        Epic epic = epics.get(subtask.getEpicId());
-        TaskStatus status = calculateEpicStatus(epic);
-        epic.setStatus(status);
+    public boolean updateSubtask(Subtask subtask) {
+        if (subtasks.containsKey(subtask.getId())) {
+            tasks.put(subtask.getId(), subtask);
+            Epic epic = epics.get(subtask.getEpicId());
+            TaskStatus status = calculateEpicStatus(epic);
+            epic.setStatus(status);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -184,6 +199,14 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             return TaskStatus.IN_PROGRESS;
         }
+    }
+
+    protected void setStartGenerateTaskId(int taskIdCounter) {
+        this.taskIdCounter = taskIdCounter;
+    }
+
+    private void generateTaskId() {
+        taskIdCounter++;
     }
 
 }

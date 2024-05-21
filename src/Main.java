@@ -1,6 +1,6 @@
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
-import ru.practicum.model.TaskStatus;
+import ru.practicum.enums.TaskStatus;
 import ru.practicum.service.Managers;
 import ru.practicum.service.TaskManager;
 
@@ -124,24 +124,24 @@ public class Main {
 
 
         // Создание Эпика(Задачи) 1
-        Epic epic1 = new Epic("ru.practicum.model.Epic 1", "ru.practicum.model.Epic description 1", TaskStatus.NEW);
+        Epic epic1 = new Epic("ru.practicum.model.Epic 1", "ru.practicum.model.Epic description 1");
         taskManager.createEpic(epic1);
         // Создание подзадачи 1 для задачи 1
-        Subtask subtask1 = new Subtask("ru.practicum.model.Subtask 1", "ru.practicum.model.Subtask description 1", TaskStatus.NEW, epic1);
+        Subtask subtask1 = new Subtask("ru.practicum.model.Subtask 1", "ru.practicum.model.Subtask description 1", epic1);
         taskManager.createSubtask(subtask1);
         // Создание подзадачи 2 для задачи 1
-        Subtask subtask2 = new Subtask("ru.practicum.model.Subtask 2", "ru.practicum.model.Subtask description 2", TaskStatus.NEW, epic1);
+        Subtask subtask2 = new Subtask("ru.practicum.model.Subtask 2", "ru.practicum.model.Subtask description 2", epic1);
         taskManager.createSubtask(subtask2);
 
         // Создание Эпика(Задачи) 2
-        Epic epic2 = new Epic("ru.practicum.model.Epic 2", "ru.practicum.model.Epic description 2", TaskStatus.NEW);
+        Epic epic2 = new Epic("ru.practicum.model.Epic 2", "ru.practicum.model.Epic description 2");
         taskManager.createEpic(epic2);
         // Создание подзадачи 1 для задачи 1
-        Subtask subtask3 = new Subtask("ru.practicum.model.Subtask 3", "ru.practicum.model.Subtask description 3", TaskStatus.NEW, epic2);
+        Subtask subtask3 = new Subtask("ru.practicum.model.Subtask 3", "ru.practicum.model.Subtask description 3", epic2);
         taskManager.createSubtask(subtask3);
 
         // Создание Эпика(Задачи) 3
-        Epic epic3 = new Epic("ru.practicum.model.Epic 3", "ru.practicum.model.Epic description 3", TaskStatus.NEW);
+        Epic epic3 = new Epic("ru.practicum.model.Epic 3", "ru.practicum.model.Epic description 3");
         taskManager.createEpic(epic3);
     }
 }
