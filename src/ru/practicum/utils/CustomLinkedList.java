@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustLinkedList {
+public class CustomLinkedList {
     private Node<Task> first;
     private Node<Task> last;
     private final Map<Integer, Node<Task>> history = new HashMap<>();

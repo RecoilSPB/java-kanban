@@ -1,13 +1,13 @@
 package ru.practicum.service;
 
 import ru.practicum.model.Task;
-import ru.practicum.utils.CustLinkedList;
+import ru.practicum.utils.CustomLinkedList;
 
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private final CustLinkedList myLinkedList = new CustLinkedList();
+    private final CustomLinkedList myLinkedList = new CustomLinkedList();
 
     @Override
     public void add(Task task) {
