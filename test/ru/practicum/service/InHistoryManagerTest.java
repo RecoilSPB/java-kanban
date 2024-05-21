@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.model.Task;
 import ru.practicum.enums.TaskStatus;
-import ru.practicum.utils.CustLinkedList;
+import ru.practicum.utils.CustomLinkedList;
 import ru.practicum.utils.Node;
 
 import java.util.List;
@@ -17,7 +17,7 @@ class InHistoryManagerTest {
     Task task1;
     Task task2;
     Task task3;
-    CustLinkedList custLinkedList;
+    CustomLinkedList customLinkedList;
     HistoryManager historyManager;
 
     @BeforeEach
@@ -29,7 +29,7 @@ class InHistoryManagerTest {
         taskManager.createTask(task2);
         task3 = new Task("3", "3", TaskStatus.DONE);
         taskManager.createTask(task3);
-        custLinkedList = new CustLinkedList();
+        customLinkedList = new CustomLinkedList();
         historyManager = Managers.getDefaultHistory();
     }
 
@@ -37,16 +37,16 @@ class InHistoryManagerTest {
     void addAndGetHistory() {
         historyManager.add(task1);
         assertFalse(historyManager.getHistory().isEmpty(), "История не должна быть пустой после добавления задачи.");
-        assertEquals(task1, historyManager.getHistory().get(0), "Добавленная задача должна быть такой же, как и в истории.");
+        assertEquals(task1, historyManager.getHistory().getFirst(), "Добавленная задача должна быть такой же, как и в истории.");
     }
 
     @Test
     void shouldReturnPrevAndNextItems() {
-        custLinkedList.linkLast(task1);
-        custLinkedList.linkLast(task2);
-        custLinkedList.linkLast(task3);
-        Node<Task> testTask1 = custLinkedList.getHashMap().get(task1.getId());
-        Node<Task> testTask2 = custLinkedList.getHashMap().get(task3.getId());
+        customLinkedList.linkLast(task1);
+        customLinkedList.linkLast(task2);
+        customLinkedList.linkLast(task3);
+        Node<Task> testTask1 = customLinkedList.getHashMap().get(task1.getId());
+        Node<Task> testTask2 = customLinkedList.getHashMap().get(task3.getId());
         assertEquals(task2, testTask1.getNext().getValue());
         assertEquals(task2, testTask2.getPrev().getValue());
     }
@@ -62,12 +62,12 @@ class InHistoryManagerTest {
 
     @Test
     void checkUnlinkMethod() {
-        custLinkedList.linkLast(task1);
-        custLinkedList.linkLast(task2);
-        custLinkedList.linkLast(task3);
-        custLinkedList.removeNode(2);
-        assertEquals(task1, custLinkedList.getNode(3).getPrev().getValue());
-        assertEquals(task3, custLinkedList.getNode(1).getNext().getValue());
+        customLinkedList.linkLast(task1);
+        customLinkedList.linkLast(task2);
+        customLinkedList.linkLast(task3);
+        customLinkedList.removeNode(2);
+        assertEquals(task1, customLinkedList.getNode(3).getPrev().getValue());
+        assertEquals(task3, customLinkedList.getNode(1).getNext().getValue());
     }
 
     @Test
