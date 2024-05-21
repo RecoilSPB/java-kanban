@@ -42,12 +42,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 } else {
                     List<Integer> historyList = HistoryMapper.historyFromString(lines[i]);
                     for (Integer taskId : historyList) {
-                        if (tasks.containsKey(taskId)) {
-                            historyManager.add(tasks.get(taskId));
-                        } else if (epics.containsKey(taskId)) {
-                            historyManager.add(epics.get(taskId));
-                        } else if (subtasks.containsKey(taskId)) {
-                            historyManager.add(subtasks.get(taskId));
+                        if (fileBackedTaskManager.tasks.containsKey(taskId)) {
+                            historyManager.add(fileBackedTaskManager.tasks.get(taskId));
+                        } else if (fileBackedTaskManager.epics.containsKey(taskId)) {
+                            historyManager.add(fileBackedTaskManager.epics.get(taskId));
+                        } else if (fileBackedTaskManager.subtasks.containsKey(taskId)) {
+                            historyManager.add(fileBackedTaskManager.subtasks.get(taskId));
                         }
                     }
                 }

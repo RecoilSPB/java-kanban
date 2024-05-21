@@ -11,10 +11,10 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
     private int taskIdCounter; // Переменная для генерации уникальных идентификаторов
-    protected static HashMap<Integer, Task> tasks = null;
-    protected static HashMap<Integer, Epic> epics = null;
-    protected static HashMap<Integer, Subtask> subtasks = null;
-    protected static HistoryManager historyManager = null;
+    protected HashMap<Integer, Task> tasks;
+    protected HashMap<Integer, Epic> epics;
+    protected HashMap<Integer, Subtask> subtasks;
+    protected static HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         taskIdCounter = 1; // Начальное значение счетчика
