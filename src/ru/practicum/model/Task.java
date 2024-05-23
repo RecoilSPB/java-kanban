@@ -70,6 +70,13 @@ public class Task {
         return startTime;
     }
 
+    public String getStartTimeString() {
+        if (startTime != null) {
+            return getStartTime().format(formatter);
+        }
+        return null;
+    }
+
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }

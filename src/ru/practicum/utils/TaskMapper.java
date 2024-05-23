@@ -17,9 +17,11 @@ import java.util.List;
 
 public class TaskMapper {
 
+    private static final String FILE_HEADER = "id,type,name,status,description,epic,startTime,endTime,duration";
+
     public static String taskToString(List<Task> allTasks) {
         StringBuilder tasksString = new StringBuilder();
-        tasksString.append("id,type,name,status,description,epic,startTime,endTime,duration\n");
+        tasksString.append(FILE_HEADER + "\n");
         for (Task task : allTasks) {
             tasksString.append(String.format("%d,%s,%s,%s,%s,%s,%s,%s,%s" + "\n",
                     task.getId(),
@@ -28,7 +30,7 @@ public class TaskMapper {
                     task.getStatus(),
                     task.getDescription(),
                     task instanceof Subtask ? ((Subtask) task).getEpicId() : "",
-                    task.getStartTime() != null ? task.getStartTime() : "",
+                    task.getStartTimeString() != null ? task.getStartTimeString() : "",
                     task.getEndTimeString() != null ? task.getEndTimeString() : "",
                     task.getDuration())
             );
@@ -46,16 +48,23 @@ public class TaskMapper {
             String name = parts[2];
             TaskStatus status = TaskStatus.valueOf(parts[3]);
             String description = parts.length > 4 ? parts[4] : "";
-            LocalDateTime startTime = (parts.length > 6 &&
-                    !parts[6].trim().isEmpty()) ? LocalDateTime.parse(parts[6].trim()) : LocalDateTime.now();
-            Duration duration = (parts.length > 8 &&
-                    !parts[8].trim().isEmpty()) ? Duration.parse(parts[8].trim()) : Duration.ZERO;
+            LocalDateTime startTime = null;
+            LocalDateTime endTime = null;
+            Duration duration = null;
+            if (parts.length > 6) {
+                if (!parts[6].trim().isEmpty())
+                    startTime = LocalDateTime.parse(parts[6].trim(), Task.formatter);
+                if (!parts[7].trim().isEmpty())
+                    endTime = LocalDateTime.parse(parts[7].trim(), Task.formatter);
+                if (!parts[8].trim().isEmpty())
+                    duration = Duration.parse(parts[8].trim());
+            }
             switch (type) {
                 case TASK -> {
                     return new Task(name, description, status, startTime, duration);
                 }
                 case EPIC -> {
-                    Epic epic = new Epic(name, description, startTime, duration);
+                    Epic epic = new Epic(name, description, startTime, duration, endTime);
                     epic.setStatus(status);
                     return epic;
                 }
