@@ -32,6 +32,9 @@ public class CustomLinkedList {
 
     public void removeNode(int id) {
         Node<Task> x = history.get(id);
+        if (x == null) {
+            return;
+        }
         final Node<Task> next = x.getNext();
         final Node<Task> prev = x.getPrev();
 

@@ -15,6 +15,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -39,20 +41,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     continue;
                 }
                 if (!isHistory) {
-                    Task task = TaskMapper.fromString(lines[i]);
-                    switch (TaskMapper.getTaskType(task)) {
-                        case TASK -> {
-                            fileBackedTaskManager.createTask(task);
-                        }
-                        case EPIC -> {
-                            fileBackedTaskManager.createEpic((Epic) task);
-                        }
-                        case SUBTASK -> {
-                            fileBackedTaskManager.createSubtask((Subtask) task);
-                            fileBackedTaskManager.epics.get(((Subtask) task).getEpicId()).addSubtask((Subtask) task);
-                        }
-                        default -> throw new IllegalArgumentException("Тип не существует: " + TaskMapper.getTaskType(task));
-                    }
+                    fileBackedTaskManager.fromString(lines[i]);
                 } else {
                     List<Integer> historyList = HistoryMapper.historyFromString(lines[i]);
                     for (Integer taskId : historyList) {
@@ -66,7 +55,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
-            fileBackedTaskManager.setStartGenerateTaskId(maxIdInFile + 1);
+           fileBackedTaskManager.setStartGenerateTaskId(maxIdInFile + 1);
             return fileBackedTaskManager;
         } catch (IOException e) {
             throw new ManagerLoadException("Произошла ошибка при чтении файла", e);
@@ -181,6 +170,58 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void deleteSubtaskById(int id) {
         super.deleteSubtaskById(id);
         save();
+    }
+
+    private void fromString(String value) {
+        try {
+            String[] parts = value.split(",");
+            if (parts.length < 4) {
+                throw new IllegalArgumentException("Неверный формат задачи");
+            }
+            TaskType type = TaskType.valueOf(parts[1]);
+            String name = parts[2];
+            TaskStatus status = TaskStatus.valueOf(parts[3]);
+            String description = parts.length > 4 ? parts[4] : "";
+            LocalDateTime startTime = null;
+            LocalDateTime endTime = null;
+            Duration duration = null;
+            if (parts.length == 9) {
+                if (!parts[6].trim().isEmpty())
+                    startTime = LocalDateTime.parse(parts[6].trim(), Task.formatter);
+                if (!parts[7].trim().isEmpty())
+                    endTime = LocalDateTime.parse(parts[7].trim(), Task.formatter);
+                if (!parts[8].trim().isEmpty())
+                    duration = Duration.parse(parts[8].trim());
+            }else {
+                startTime = LocalDateTime.MIN;
+                duration = Duration.ZERO;
+            }
+            switch (type) {
+                case TASK -> {
+                    Task task = new Task(name, description, status, startTime, duration);
+                    createTask(task);
+                }
+                case EPIC -> {
+                    Epic epic = new Epic(name, description, startTime, duration, endTime);
+                    epic.setStatus(status);
+                    createEpic(epic);
+                }
+                case SUBTASK -> {
+                    int epicId = parts.length > 5 ? Integer.parseInt(parts[5]) : 0;
+                    if (epicId == 0) {
+                        throw new RuntimeException("Нет ссылки на Epic");
+                    }
+                    Epic epic = epics.get(epicId);
+                    Subtask subtask = new Subtask(name, description, epic, startTime, duration);
+                    subtask.setStatus(status);
+                    createSubtask(subtask);
+                }
+                default -> throw new IllegalArgumentException("Тип не существует: " + type);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new ManagerLoadException("Произошла ошибка во время парсинга строки из файла.");
+        }
     }
 
     private void save() {

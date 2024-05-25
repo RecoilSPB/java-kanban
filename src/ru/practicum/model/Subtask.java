@@ -14,10 +14,17 @@ public class Subtask extends Task {
         epic.addSubtask(this);
     }
 
-    public Subtask(String name, String description, Integer epicId, LocalDateTime startTime, Duration duration) {
+    public Subtask(String name, String description, Epic epic, LocalDateTime startTime, Duration duration) {
         super(name, description, TaskStatus.NEW, startTime, duration);
-        this.epicId = epicId;
-//        epic.addSubtask(this);
+        this.epicId = epic.getId();
+        epic.addSubtask(this);
+    }
+
+    public Subtask(String name, String description, Epic epic, TaskStatus status,
+                   LocalDateTime startTime, Duration duration) {
+        super(name, description, status, startTime, duration);
+        this.epicId = epic.getId();
+        epic.addSubtask(this);
     }
 
     public int getEpicId() {

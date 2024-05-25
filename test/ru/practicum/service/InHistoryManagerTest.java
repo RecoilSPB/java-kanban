@@ -22,7 +22,7 @@ class InHistoryManagerTest {
 
     @BeforeEach
     void setUp() {
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager = new InMemoryTaskManager();
         task1 = new Task("1", "1", TaskStatus.NEW);
         taskManager.createTask(task1);
         task2 = new Task("2", "2", TaskStatus.IN_PROGRESS);
@@ -36,8 +36,10 @@ class InHistoryManagerTest {
     @Test
     void addAndGetHistory() {
         historyManager.add(task1);
-        assertFalse(historyManager.getHistory().isEmpty(), "История не должна быть пустой после добавления задачи.");
-        assertEquals(task1, historyManager.getHistory().getFirst(), "Добавленная задача должна быть такой же, как и в истории.");
+        assertFalse(historyManager.getHistory().isEmpty(),
+                "История не должна быть пустой после добавления задачи.");
+        assertEquals(task1, historyManager.getHistory().getFirst(),
+                "Добавленная задача должна быть такой же, как и в истории.");
     }
 
     @Test

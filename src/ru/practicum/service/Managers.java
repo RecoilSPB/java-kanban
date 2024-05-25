@@ -5,7 +5,7 @@ import java.io.File;
 public class Managers {
 
     public static FileBackedTaskManager getDefault() {
-        return new FileBackedTaskManager(new File("kanban.csv"));
+        return new FileBackedTaskManager(new File("./resources/kanban.csv"));
     }
 
     public static HistoryManager getDefaultHistory() {

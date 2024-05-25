@@ -90,15 +90,16 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        if (startTime != null) {
+        if (startTime != null && duration != null) {
             return startTime.plusMinutes(duration.toMinutes());
         }
         return null;
     }
 
     public String getEndTimeString() {
-        if (startTime != null) {
-            return getEndTime().format(formatter);
+        LocalDateTime endTime = getEndTime();
+        if (endTime != null){
+            return endTime.format(formatter);
         }
         return null;
     }
@@ -111,12 +112,14 @@ public class Task {
         return id == task.id &&
                 Objects.equals(name, task.name) &&
                 Objects.equals(description, task.description) &&
-                status == task.status;
+                status == task.status &&
+                Objects.equals(startTime, task.startTime) &&
+                Objects.equals(duration, task.duration);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, id, status);
+        return Objects.hash(id, name, description, status, startTime, duration);
     }
 
     @Override

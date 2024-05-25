@@ -5,6 +5,7 @@ import ru.practicum.enums.TaskStatus;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Epic extends Task {
     protected final ArrayList<Subtask> subtasks;
@@ -30,28 +31,11 @@ public class Epic extends Task {
 
     public void addSubtask(Subtask newSubtask) {
         this.subtasks.add(newSubtask);
-        Duration totalDuration = Duration.ZERO;
-        LocalDateTime earliestStartTime = LocalDateTime.MAX;
-        LocalDateTime latestEndTime = LocalDateTime.MIN;
-
-        for (Subtask subtask : this.subtasks) {
-            totalDuration = totalDuration.plus(subtask.getDuration());
-            LocalDateTime subtaskStartTime = subtask.getStartTime();
-            LocalDateTime subtaskEndTime = subtask.getEndTime();
-
-            if (!subtaskStartTime.equals(LocalDateTime.MIN) && subtaskStartTime.isBefore(earliestStartTime)) {
-                earliestStartTime = subtaskStartTime;
-            }
-            if (subtaskEndTime.isAfter(latestEndTime)) {
-                latestEndTime = subtaskEndTime;
-            }
-        }
-
-        this.duration = totalDuration;
-        this.startTime = earliestStartTime.equals(LocalDateTime.MAX) ? null : earliestStartTime;
-        this.endTime = latestEndTime.equals(LocalDateTime.MIN) ? null : latestEndTime;
     }
 
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
 
     @Override
     public LocalDateTime getEndTime() {
@@ -64,6 +48,20 @@ public class Epic extends Task {
 
     public ArrayList<Subtask> getSubtasks() {
         return subtasks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtasks, epic.subtasks) && Objects.equals(endTime, epic.endTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtasks, endTime);
     }
 
     @Override

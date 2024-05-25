@@ -11,13 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class InMemoryTaskManagerTest {
-
-    private TaskManager taskManager;
+public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @BeforeEach
     void setUp() {
-        taskManager = Managers.getDefault();
+        super.taskManager = new InMemoryTaskManager();
+        initTasks();
     }
 
     @Test
@@ -51,16 +50,10 @@ public class InMemoryTaskManagerTest {
         assertEquals(TaskStatus.DONE, updatedTask.getStatus());
     }
 
-    @Test
-    void deleteTask() {
-        Task task = new Task("Sample Task", "Description", TaskStatus.NEW);
-
-        taskManager.createTask(task);
-        assertNotNull(taskManager.getTaskById(task.getId()));
-
-        taskManager.deleteTaskById(task.getId());
-        assertNull(taskManager.getTaskById(task.getId()));
-    }
+//    @Test
+//    void deleteTask() {
+//
+//    }
 
     @Test
     void createAndGetEpic() {
@@ -187,7 +180,7 @@ public class InMemoryTaskManagerTest {
             taskManager.createTask(task);
         }
 
-        assertEquals(15, taskManager.getAllTasks().size());
+        assertEquals(16, taskManager.getAllTasks().size());
 
         taskManager.deleteAllTasks();
 
@@ -201,7 +194,7 @@ public class InMemoryTaskManagerTest {
             taskManager.createEpic(epic);
         }
 
-        assertEquals(15, taskManager.getAllEpics().size());
+        assertEquals(16, taskManager.getAllEpics().size());
 
         taskManager.deleteAllEpics();
 
@@ -217,7 +210,7 @@ public class InMemoryTaskManagerTest {
             taskManager.createSubtask(subtask);
         }
 
-        assertEquals(15, taskManager.getAllSubtasks().size());
+        assertEquals(17, taskManager.getAllSubtasks().size());
         assertEquals(15, taskManager.getSubtasksByEpicId(epic.getId()).size());
 
         taskManager.deleteAllSubtasks();
@@ -234,13 +227,13 @@ public class InMemoryTaskManagerTest {
             taskManager.createSubtask(subtask);
         }
 
-        assertEquals(15, taskManager.getAllSubtasks().size());
+        assertEquals(17, taskManager.getAllSubtasks().size());
         assertEquals(15, taskManager.getSubtasksByEpicId(epic.getId()).size());
 
         taskManager.deleteEpicById(epic.getId());
 
-        assertEquals(0, taskManager.getAllSubtasks().size());
-        assertEquals(0, taskManager.getAllEpics().size());
+        assertEquals(2, taskManager.getAllSubtasks().size());
+        assertEquals(1, taskManager.getAllEpics().size());
     }
 
     @Test
@@ -250,7 +243,7 @@ public class InMemoryTaskManagerTest {
             taskManager.createEpic(epic);
         }
 
-        assertEquals(0, taskManager.getHistory().size());
+        assertEquals(2, taskManager.getHistory().size());
     }
 
     @Test
