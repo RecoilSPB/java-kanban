@@ -1,25 +1,24 @@
 package ru.practicum.service;
 
+import ru.practicum.enums.TaskStatus;
 import ru.practicum.exceptions.CollisionTaskException;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
-import ru.practicum.enums.TaskStatus;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private int taskIdCounter; // Переменная для генерации уникальных идентификаторов
+    protected static final Comparator<Task> COMPARATOR = Comparator.comparing(Task::getStartTime,
+            Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId);
+    protected static HistoryManager historyManager;
     protected HashMap<Integer, Task> tasks;
     protected HashMap<Integer, Epic> epics;
     protected HashMap<Integer, Subtask> subtasks;
-    protected static HistoryManager historyManager;
     protected Set<Task> prioritizedTasks;
-
-    protected static final Comparator<Task> COMPARATOR = Comparator.comparing(Task::getStartTime,
-            Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId);
+    private int taskIdCounter; // Переменная для генерации уникальных идентификаторов
 
     public InMemoryTaskManager() {
         taskIdCounter = 1; // Начальное значение счетчика
@@ -284,7 +283,7 @@ public class InMemoryTaskManager implements TaskManager {
                     newTask.getStartTime().isBefore(existTask.getEndTime())) {
                 throw new CollisionTaskException(
                         "Время выполнения задачи пересекается со временем уже существующей задачи." +
-                        " Выберите другую дату."
+                                " Выберите другую дату."
                 );
             }
         }

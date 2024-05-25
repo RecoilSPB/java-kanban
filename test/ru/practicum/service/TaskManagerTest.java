@@ -3,7 +3,9 @@ package ru.practicum.service;
 import org.junit.jupiter.api.Test;
 import ru.practicum.enums.TaskStatus;
 import ru.practicum.exceptions.CollisionTaskException;
-import ru.practicum.model.*;
+import ru.practicum.model.Epic;
+import ru.practicum.model.Subtask;
+import ru.practicum.model.Task;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -12,8 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
-    protected T taskManager;
     protected final LocalDateTime DATE = LocalDateTime.of(2024, 5, 1, 0, 0);
+    protected T taskManager;
     protected Duration DURATION = Duration.ofMinutes(100);
     protected Task task1;
     protected Epic epic2;

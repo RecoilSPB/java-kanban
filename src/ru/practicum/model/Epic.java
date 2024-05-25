@@ -33,13 +33,13 @@ public class Epic extends Task {
         this.subtasks.add(newSubtask);
     }
 
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
     @Override
     public LocalDateTime getEndTime() {
         return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public void removeSubtask(Subtask subtask) {

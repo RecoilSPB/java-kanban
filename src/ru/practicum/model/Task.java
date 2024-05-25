@@ -9,14 +9,13 @@ import java.util.Objects;
 
 public class Task {
 
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
     protected int id;
     protected String name;
     protected String description;
     protected TaskStatus status;
     protected LocalDateTime startTime;
     protected Duration duration;
-
-    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
 
     public Task(String name, String description, TaskStatus status) {
         this.name = name;
@@ -70,15 +69,15 @@ public class Task {
         return startTime;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     public String getStartTimeString() {
         if (startTime != null) {
             return getStartTime().format(formatter);
         }
         return null;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
     }
 
     public Duration getDuration() {
@@ -98,7 +97,7 @@ public class Task {
 
     public String getEndTimeString() {
         LocalDateTime endTime = getEndTime();
-        if (endTime != null){
+        if (endTime != null) {
             return endTime.format(formatter);
         }
         return null;

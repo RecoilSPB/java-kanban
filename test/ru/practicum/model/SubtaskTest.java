@@ -11,7 +11,7 @@ public class SubtaskTest {
     private static Epic epic;
 
     @BeforeAll
-    static void setup(){
+    static void setup() {
         epic = new Epic("Title Epic", "Description");
         epic.setId(1);
     }

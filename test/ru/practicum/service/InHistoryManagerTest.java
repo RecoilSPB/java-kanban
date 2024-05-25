@@ -2,8 +2,8 @@ package ru.practicum.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.model.Task;
 import ru.practicum.enums.TaskStatus;
+import ru.practicum.model.Task;
 import ru.practicum.utils.CustomLinkedList;
 import ru.practicum.utils.Node;
 

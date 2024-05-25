@@ -55,11 +55,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
-           fileBackedTaskManager.setStartGenerateTaskId(maxIdInFile + 1);
+            fileBackedTaskManager.setStartGenerateTaskId(maxIdInFile + 1);
             return fileBackedTaskManager;
         } catch (IOException e) {
             throw new ManagerLoadException("Произошла ошибка при чтении файла", e);
         }
+    }
+
+    private static int getMaxIdInFile(String[] lines) {
+        int maxId = 1;
+        for (int i = 1; i < lines.length; i++) {
+            if (lines[i].isBlank()) {
+                break;
+            }
+            String[] parts = lines[i].split(",");
+            int id = Integer.parseInt(parts[0]);
+            maxId = Math.max(maxId, id);
+        }
+        return maxId;
     }
 
     //Удаление всех задач
@@ -192,7 +205,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     endTime = LocalDateTime.parse(parts[7].trim(), Task.formatter);
                 if (!parts[8].trim().isEmpty())
                     duration = Duration.parse(parts[8].trim());
-            }else {
+            } else {
                 startTime = LocalDateTime.MIN;
                 duration = Duration.ZERO;
             }
@@ -240,18 +253,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException("Произошла ошибка во время записи в файл.", e);
         }
-    }
-
-    private static int getMaxIdInFile(String[] lines) {
-        int maxId = 1;
-        for (int i = 1; i < lines.length; i++) {
-            if (lines[i].isBlank()) {
-                break;
-            }
-            String[] parts = lines[i].split(",");
-            int id = Integer.parseInt(parts[0]);
-            maxId = Math.max(maxId, id);
-        }
-        return maxId;
     }
 }

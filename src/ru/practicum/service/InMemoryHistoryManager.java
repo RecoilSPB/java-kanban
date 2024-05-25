@@ -3,7 +3,7 @@ package ru.practicum.service;
 import ru.practicum.model.Task;
 import ru.practicum.utils.CustomLinkedList;
 
-import java.util.*;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
