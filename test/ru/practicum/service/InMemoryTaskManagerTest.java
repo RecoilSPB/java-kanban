@@ -3,9 +3,15 @@ package ru.practicum.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.practicum.enums.TaskStatus;
+import ru.practicum.exceptions.InvalidTaskException;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,7 +19,7 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
 
     @BeforeEach
     void setUp() {
-        super.taskManager = new InMemoryTaskManager();
+        taskManager = new InMemoryTaskManager();
         initTasks();
     }
 
@@ -47,11 +53,6 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         assertEquals("Updated Task Description", updatedTask.getDescription());
         assertEquals(TaskStatus.DONE, updatedTask.getStatus());
     }
-
-//    @Test
-//    void deleteTask() {
-//
-//    }
 
     @Test
     void createAndGetEpic() {
@@ -260,5 +261,50 @@ public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager
         assertEquals(TaskStatus.DONE, taskManager.getSubtaskById(subtask.getId()).getStatus());
         assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicById(epic.getId()).getStatus());
 
+    }
+
+    @Test
+    void createInvalidEpicAndSubtask() {
+        Subtask s1 = new Subtask(
+                "Sample Subtask",
+                "Description",
+                new Epic(
+                        "Sample Epic",
+                        "Description"
+                )
+        );
+        InvalidTaskException exception = assertThrows(InvalidTaskException.class, () -> taskManager.createSubtask(s1));
+
+        assertEquals("Epic не найден.", exception.getMessage());
+    }
+
+    @Test
+    void getPrioritizedTasks() {
+        Epic epic = new Epic("Sample Epic", "Description");
+        Epic e = taskManager.createEpic(epic);
+
+        String start1 = "2024-05-27T22:00:00";
+        String start2 = "2024-05-27T22:30:01";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        LocalDateTime parsedStart1 = LocalDateTime.parse(start1, formatter);
+        LocalDateTime parsedStart2 = LocalDateTime.parse(start2, formatter);
+
+        Subtask subtask1 = new Subtask("Sample Subtask 1", "Description 1", e, parsedStart1, Duration.ofMinutes(30));
+        Subtask subtask2 = new Subtask("Sample Subtask 2", "Description 2", e, parsedStart2, Duration.ofMinutes(30));
+
+        Subtask s1 = taskManager.createSubtask(subtask1);
+        Subtask s2 = taskManager.createSubtask(subtask2);
+
+        String start3 = "2024-05-27T19:30:01";
+
+        s2.setStartTime(LocalDateTime.parse(start3, formatter));
+
+        taskManager.updateSubtask(s2);
+
+        List<Task> pt = taskManager.getPrioritizedTasks();
+        int s1Index = pt.indexOf(s1);
+        int s2Index = pt.indexOf(s2);
+        assertTrue(s1Index > s2Index, "Не верная сортировка приоритета.");
     }
 }

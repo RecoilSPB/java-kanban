@@ -2,6 +2,7 @@ package ru.practicum.service;
 
 import ru.practicum.enums.TaskStatus;
 import ru.practicum.exceptions.CollisionTaskException;
+import ru.practicum.exceptions.InvalidTaskException;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
@@ -11,8 +12,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected static final Comparator<Task> COMPARATOR = Comparator.comparing(Task::getStartTime,
-            Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId);
+    protected static final Comparator<Task> COMPARATOR = Comparator
+            .comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder()))
+            .thenComparing(Task::getId);
     protected static HistoryManager historyManager;
     protected HashMap<Integer, Task> tasks;
     protected HashMap<Integer, Epic> epics;
@@ -149,6 +151,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask createSubtask(Subtask subtask) {
         validate(subtask);
+        int epicId = subtask.getEpicId();
+        if (epicId == 0 || !epics.containsKey(epicId)){
+            throw new InvalidTaskException("Epic не найден.");
+        }
         subtask.setId(taskIdCounter);
         subtasks.put(taskIdCounter, subtask);
         prioritizedTasks.add(subtask);
@@ -228,11 +234,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void setEpicDateTime(int epicId) {
-        List<Subtask> subtasks = epics.get(epicId).getSubtasks();
+        Epic epic = epics.get(epicId);
+        if (epic == null){
+            throw new InvalidTaskException("Epic не найден.");
+        }
+        List<Subtask> subtasks = epic.getSubtasks();
         if (subtasks.isEmpty()) {
-            epics.get(epicId).setDuration(Duration.ZERO);
-            epics.get(epicId).setStartTime(null);
-            epics.get(epicId).setEndTime(null);
+            epic.setDuration(Duration.ZERO);
+            epic.setStartTime(null);
+            epic.setEndTime(null);
             return;
         }
         LocalDateTime epicStartTime = null;
@@ -253,14 +263,14 @@ public class InMemoryTaskManager implements TaskManager {
             }
             epicDuration = epicDuration.plus(subtask.getDuration());
         }
-        epics.get(epicId).setStartTime(epicStartTime);
-        epics.get(epicId).setEndTime(epicEndTime);
-        epics.get(epicId).setDuration(epicDuration);
+        epic.setStartTime(epicStartTime);
+        epic.setEndTime(epicEndTime);
+        epic.setDuration(epicDuration);
     }
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        return new ArrayList<>(prioritizedTasks);
+        return prioritizedTasks.stream().sorted(COMPARATOR).toList();
     }
 
     @Override
