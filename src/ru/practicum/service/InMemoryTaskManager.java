@@ -152,7 +152,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask createSubtask(Subtask subtask) {
         validate(subtask);
         int epicId = subtask.getEpicId();
-        if (epicId == 0 || !epics.containsKey(epicId)){
+        if (epicId == 0 || !epics.containsKey(epicId)) {
             throw new InvalidTaskException("Epic не найден.");
         }
         subtask.setId(taskIdCounter);
@@ -235,7 +235,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void setEpicDateTime(int epicId) {
         Epic epic = epics.get(epicId);
-        if (epic == null){
+        if (epic == null) {
             throw new InvalidTaskException("Epic не найден.");
         }
         List<Subtask> subtasks = epic.getSubtasks();
