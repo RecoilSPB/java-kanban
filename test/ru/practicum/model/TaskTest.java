@@ -3,7 +3,7 @@ package ru.practicum.model;
 import org.junit.jupiter.api.Test;
 import ru.practicum.enums.TaskStatus;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskTest {
 

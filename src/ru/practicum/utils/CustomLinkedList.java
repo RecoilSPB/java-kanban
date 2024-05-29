@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CustLinkedList {
+public class CustomLinkedList {
+    private final Map<Integer, Node<Task>> history = new HashMap<>();
     private Node<Task> first;
     private Node<Task> last;
-    private final Map<Integer, Node<Task>> history = new HashMap<>();
 
     public void linkLast(Task task) {
         if (task != null) {
@@ -32,6 +32,9 @@ public class CustLinkedList {
 
     public void removeNode(int id) {
         Node<Task> x = history.get(id);
+        if (x == null) {
+            return;
+        }
         final Node<Task> next = x.getNext();
         final Node<Task> prev = x.getPrev();
 

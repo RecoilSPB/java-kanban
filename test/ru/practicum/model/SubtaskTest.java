@@ -11,7 +11,7 @@ public class SubtaskTest {
     private static Epic epic;
 
     @BeforeAll
-    static void setup(){
+    static void setup() {
         epic = new Epic("Title Epic", "Description");
         epic.setId(1);
     }
@@ -29,7 +29,7 @@ public class SubtaskTest {
         assertEquals(title, subtask.getName(), "Название Epic должен соответствовать: " + title);
         assertEquals(description, subtask.getDescription(), "Описание Epic должен соответствовать: " + description);
         assertEquals(status, subtask.getStatus(), "Статус Epic должен соответствовать:" + status);
-        assertNotEquals(subtask.getEpicId(), "", "Subtask.getEpicId не должен быть пустым.");
+        assertNotEquals(subtask.getEpicId(), 0, "Subtask.getEpicId не должен быть пустым.");
     }
 
     @Test

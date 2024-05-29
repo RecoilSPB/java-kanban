@@ -2,22 +2,25 @@ package ru.practicum.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.practicum.enums.TaskStatus;
+import ru.practicum.exceptions.InvalidTaskException;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
-import ru.practicum.enums.TaskStatus;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
-public class InMemoryTaskManagerTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-    private TaskManager taskManager;
+public class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
     @BeforeEach
     void setUp() {
-        taskManager = Managers.getDefault();
+        taskManager = new InMemoryTaskManager();
+        initTasks();
     }
 
     @Test
@@ -49,17 +52,6 @@ public class InMemoryTaskManagerTest {
         assertEquals("Updated Task Title", updatedTask.getName());
         assertEquals("Updated Task Description", updatedTask.getDescription());
         assertEquals(TaskStatus.DONE, updatedTask.getStatus());
-    }
-
-    @Test
-    void deleteTask() {
-        Task task = new Task("Sample Task", "Description", TaskStatus.NEW);
-
-        taskManager.createTask(task);
-        assertNotNull(taskManager.getTaskById(task.getId()));
-
-        taskManager.deleteTaskById(task.getId());
-        assertNull(taskManager.getTaskById(task.getId()));
     }
 
     @Test
@@ -187,7 +179,7 @@ public class InMemoryTaskManagerTest {
             taskManager.createTask(task);
         }
 
-        assertEquals(15, taskManager.getAllTasks().size());
+        assertEquals(16, taskManager.getAllTasks().size());
 
         taskManager.deleteAllTasks();
 
@@ -201,7 +193,7 @@ public class InMemoryTaskManagerTest {
             taskManager.createEpic(epic);
         }
 
-        assertEquals(15, taskManager.getAllEpics().size());
+        assertEquals(16, taskManager.getAllEpics().size());
 
         taskManager.deleteAllEpics();
 
@@ -217,7 +209,7 @@ public class InMemoryTaskManagerTest {
             taskManager.createSubtask(subtask);
         }
 
-        assertEquals(15, taskManager.getAllSubtasks().size());
+        assertEquals(17, taskManager.getAllSubtasks().size());
         assertEquals(15, taskManager.getSubtasksByEpicId(epic.getId()).size());
 
         taskManager.deleteAllSubtasks();
@@ -234,13 +226,13 @@ public class InMemoryTaskManagerTest {
             taskManager.createSubtask(subtask);
         }
 
-        assertEquals(15, taskManager.getAllSubtasks().size());
+        assertEquals(17, taskManager.getAllSubtasks().size());
         assertEquals(15, taskManager.getSubtasksByEpicId(epic.getId()).size());
 
         taskManager.deleteEpicById(epic.getId());
 
-        assertEquals(0, taskManager.getAllSubtasks().size());
-        assertEquals(0, taskManager.getAllEpics().size());
+        assertEquals(2, taskManager.getAllSubtasks().size());
+        assertEquals(1, taskManager.getAllEpics().size());
     }
 
     @Test
@@ -250,7 +242,7 @@ public class InMemoryTaskManagerTest {
             taskManager.createEpic(epic);
         }
 
-        assertEquals(0, taskManager.getHistory().size());
+        assertEquals(2, taskManager.getHistory().size());
     }
 
     @Test
@@ -269,5 +261,50 @@ public class InMemoryTaskManagerTest {
         assertEquals(TaskStatus.DONE, taskManager.getSubtaskById(subtask.getId()).getStatus());
         assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpicById(epic.getId()).getStatus());
 
+    }
+
+    @Test
+    void createInvalidEpicAndSubtask() {
+        Subtask s1 = new Subtask(
+                "Sample Subtask",
+                "Description",
+                new Epic(
+                        "Sample Epic",
+                        "Description"
+                )
+        );
+        InvalidTaskException exception = assertThrows(InvalidTaskException.class, () -> taskManager.createSubtask(s1));
+
+        assertEquals("Epic не найден.", exception.getMessage());
+    }
+
+    @Test
+    void getPrioritizedTasks() {
+        Epic epic = new Epic("Sample Epic", "Description");
+        Epic e = taskManager.createEpic(epic);
+
+        String start1 = "2024-05-27T22:00:00";
+        String start2 = "2024-05-27T22:30:01";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        LocalDateTime parsedStart1 = LocalDateTime.parse(start1, formatter);
+        LocalDateTime parsedStart2 = LocalDateTime.parse(start2, formatter);
+
+        Subtask subtask1 = new Subtask("Sample Subtask 1", "Description 1", e, parsedStart1, Duration.ofMinutes(30));
+        Subtask subtask2 = new Subtask("Sample Subtask 2", "Description 2", e, parsedStart2, Duration.ofMinutes(30));
+
+        Subtask s1 = taskManager.createSubtask(subtask1);
+        Subtask s2 = taskManager.createSubtask(subtask2);
+
+        String start3 = "2024-05-27T19:30:01";
+
+        s2.setStartTime(LocalDateTime.parse(start3, formatter));
+
+        taskManager.updateSubtask(s2);
+
+        List<Task> pt = taskManager.getPrioritizedTasks();
+        int s1Index = pt.indexOf(s1);
+        int s2Index = pt.indexOf(s2);
+        assertTrue(s1Index > s2Index, "Не верная сортировка приоритета.");
     }
 }

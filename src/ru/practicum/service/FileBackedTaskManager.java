@@ -8,12 +8,15 @@ import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
 import ru.practicum.utils.HistoryMapper;
+import ru.practicum.utils.TaskMapper;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -57,6 +60,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerLoadException("Произошла ошибка при чтении файла", e);
         }
+    }
+
+    private static int getMaxIdInFile(String[] lines) {
+        int maxId = 1;
+        for (int i = 1; i < lines.length; i++) {
+            if (lines[i].isBlank()) {
+                break;
+            }
+            String[] parts = lines[i].split(",");
+            int id = Integer.parseInt(parts[0]);
+            maxId = Math.max(maxId, id);
+        }
+        return maxId;
     }
 
     //Удаление всех задач
@@ -169,32 +185,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-    private void save() {
-        List<Task> allTask = new ArrayList<>();
-        allTask.addAll(getAllTasks());
-        allTask.addAll(getAllEpics());
-        allTask.addAll(getAllSubtasks());
-        allTask.sort(Comparator.comparingInt(Task::getId));
-        try (FileWriter fileWriter = new FileWriter(file.toString(), StandardCharsets.UTF_8)) {
-            fileWriter.write("id,type,name,status,description,epic\n");
-            for (Task task : allTask) {
-                fileWriter.write(String.format("%d,%s,%s,%s,%s,%s" + "\n",
-                        task.getId(),
-                        getTaskType(task),
-                        task.getName(),
-                        task.getStatus(),
-                        task.getDescription(),
-                        task instanceof Subtask ? ((Subtask) task).getEpicId() : "")
-                );
-            }
-            if (!getHistory().isEmpty()) {
-                fileWriter.write("\n" + HistoryMapper.historyToString(getHistory()));
-            }
-        } catch (IOException e) {
-            throw new ManagerSaveException("Произошла ошибка во время записи в файл.", e);
-        }
-    }
-
     private void fromString(String value) {
         try {
             String[] parts = value.split(",");
@@ -205,49 +195,63 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String name = parts[2];
             TaskStatus status = TaskStatus.valueOf(parts[3]);
             String description = parts.length > 4 ? parts[4] : "";
+            LocalDateTime startTime = null;
+            LocalDateTime endTime = null;
+            Duration duration = null;
+            if (parts.length == 9) {
+                if (!parts[6].trim().isEmpty())
+                    startTime = LocalDateTime.parse(parts[6].trim(), Task.formatter);
+                if (!parts[7].trim().isEmpty())
+                    endTime = LocalDateTime.parse(parts[7].trim(), Task.formatter);
+                if (!parts[8].trim().isEmpty())
+                    duration = Duration.parse(parts[8].trim());
+            } else {
+                startTime = LocalDateTime.MIN;
+                duration = Duration.ZERO;
+            }
             switch (type) {
                 case TASK -> {
-                    Task task = new Task(name, description, status);
+                    Task task = new Task(name, description, status, startTime, duration);
                     createTask(task);
                 }
                 case EPIC -> {
-                    Epic epic = new Epic(name, description);
+                    Epic epic = new Epic(name, description, startTime, duration, endTime);
                     epic.setStatus(status);
                     createEpic(epic);
                 }
                 case SUBTASK -> {
                     int epicId = parts.length > 5 ? Integer.parseInt(parts[5]) : 0;
-                    Subtask subtask = new Subtask(name, description, epics.get(epicId));
+                    if (epicId == 0) {
+                        throw new RuntimeException("Нет ссылки на Epic");
+                    }
+                    Epic epic = epics.get(epicId);
+                    Subtask subtask = new Subtask(name, description, epic, startTime, duration);
                     subtask.setStatus(status);
                     createSubtask(subtask);
                 }
                 default -> throw new IllegalArgumentException("Тип не существует: " + type);
             }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new ManagerLoadException("Произошла ошибка во время парсинга строки из файла.");
         }
     }
 
-    private static int getMaxIdInFile(String[] lines) {
-        int maxId = 1;
-        for (int i = 1; i < lines.length; i++) {
-            if (lines[i].isBlank()) {
-                break;
+    private void save() {
+        List<Task> allTask = new ArrayList<>();
+        allTask.addAll(getAllTasks());
+        allTask.addAll(getAllEpics());
+        allTask.addAll(getAllSubtasks());
+        allTask.sort(Comparator.comparingInt(Task::getId));
+        try (FileWriter fileWriter = new FileWriter(file.toString(), StandardCharsets.UTF_8)) {
+            if (!allTask.isEmpty()) {
+                fileWriter.write(TaskMapper.taskToString(allTask));
             }
-            String[] parts = lines[i].split(",");
-            int id = Integer.parseInt(parts[0]);
-            maxId = Math.max(maxId, id);
-        }
-        return maxId;
-    }
-
-    private Object getTaskType(Task task) {
-        if (task instanceof Epic) {
-            return TaskType.EPIC;
-        } else if (task instanceof Subtask) {
-            return TaskType.SUBTASK;
-        } else {
-            return TaskType.TASK;
+            if (!getHistory().isEmpty()) {
+                fileWriter.write("\n" + HistoryMapper.historyToString(getHistory()));
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException("Произошла ошибка во время записи в файл.", e);
         }
     }
 }
