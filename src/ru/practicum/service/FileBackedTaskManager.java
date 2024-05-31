@@ -22,10 +22,14 @@ import java.util.Comparator;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private final File file;
+    private File file = new File("./resources/forTest.csv");
 
     public FileBackedTaskManager(File file) {
         this.file = file;
+    }
+
+    public FileBackedTaskManager() {
+        file = new File("./resources/forTest.csv");
     }
 
     public static FileBackedTaskManager loadFromFile(File file) throws ManagerLoadException {
@@ -237,7 +241,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private void save() {
+    protected void save() {
         List<Task> allTask = new ArrayList<>();
         allTask.addAll(getAllTasks());
         allTask.addAll(getAllEpics());

@@ -225,8 +225,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    public int getTaskIdCounter() {
+        return taskIdCounter;
+    }
+
     protected void setStartGenerateTaskId(int taskIdCounter) {
-        this.taskIdCounter = taskIdCounter;
+        this.taskIdCounter = taskIdCounter + 1;
     }
 
     private void generateTaskId() {
