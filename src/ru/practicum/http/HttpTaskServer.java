@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import ru.practicum.enums.Endpoint;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Subtask;
 import ru.practicum.model.Task;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 public class HttpTaskServer {
 
-    private static final int PORT = 8080;
+    public static final int PORT = 9099;
 
     private final HttpServer httpServer;
     private final TaskManager taskManager;
@@ -63,8 +64,9 @@ public class HttpTaskServer {
                     try {
                         Task task = gson.fromJson(bodyTask, Task.class);
                         if (task.getId() == 0) {
-                            taskManager.createTask(task);
-                            writeResponse(exchange, "Задача добавлена", HttpStatus.SC_CREATED);
+                            Task seveTask = taskManager.createTask(task);
+                            String json = gson.toJson(seveTask);
+                            writeResponse(exchange, json, HttpStatus.SC_CREATED);
                         } else {
                             taskManager.updateTask(task);
                             writeResponse(exchange, "Задача обновлена", HttpStatus.SC_CREATED);
@@ -341,12 +343,6 @@ public class HttpTaskServer {
             } catch (NumberFormatException exception) {
                 return -1;
             }
-        }
-
-        enum Endpoint {
-            DELETE_TASKS, DELETE_SUBTASKS, DELETE_EPICS, GET_TASKS, GET_EPICS, GET_SUBTASKS, GET_TASK, GET_EPIC,
-            GET_SUBTASK, GET_SUBTASKS_EPIC, DELETE_TASK, DELETE_EPIC, DELETE_SUBTASK, POST_TASK, POST_SUBTASK,
-            POST_EPIC, GET_HISTORY, GET_PRIORITY, UNKNOWN
         }
     }
 }

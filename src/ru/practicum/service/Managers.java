@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 
 public class Managers {
 
-    public static TaskManager getDefault() {
-        return new HttpTaskManager();
+    public static InMemoryTaskManager getDefault() {
+        return new InMemoryTaskManager();
     }
 
     public static FileBackedTaskManager getDefaultFile() {
