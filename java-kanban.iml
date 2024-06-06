@@ -72,5 +72,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="google.code.gson" level="project" />
+    <orderEntry type="library" name="sun.net.httpserver.http" level="project" />
   </component>
 </module>

@@ -4,7 +4,11 @@ import java.io.File;
 
 public class Managers {
 
-    public static FileBackedTaskManager getDefault() {
+    public static InMemoryTaskManager getDefault() {
+        return new InMemoryTaskManager();
+    }
+
+    public static FileBackedTaskManager getDefaultFile() {
         return new FileBackedTaskManager(new File("./resources/kanban.csv"));
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-abstract class TaskManagerTest<T extends TaskManager> {
+public abstract class TaskManagerTest<T extends TaskManager> {
     protected final LocalDateTime DATE = LocalDateTime.of(2024, 5, 1, 0, 0);
     protected T taskManager;
     protected Duration DURATION = Duration.ofMinutes(100);

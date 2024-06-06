@@ -7,7 +7,7 @@ import ru.practicum.service.TaskManager;
 public class Main {
     public static void main(String[] args) {
         // Create ru.practicum.model.Task Manager
-        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager = Managers.getDefaultFile();
         init(taskManager);
 
         // Проверка получение списка всех задач
