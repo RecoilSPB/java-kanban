@@ -206,7 +206,9 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Subtask> subtasks = epic.getSubtasks();
         boolean allSubtasksDone = true;
         boolean allSubtasksNew = true;
-
+        if (subtasks == null || subtasks.isEmpty()) {
+            return TaskStatus.NEW;
+        }
         for (Subtask subtask : subtasks) {
             if (subtask.getStatus() != TaskStatus.DONE) {
                 allSubtasksDone = false;
@@ -216,17 +218,13 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
-        if (subtasks.isEmpty() || allSubtasksNew) {
+        if (allSubtasksNew) {
             return TaskStatus.NEW;
         } else if (allSubtasksDone) {
             return TaskStatus.DONE;
         } else {
             return TaskStatus.IN_PROGRESS;
         }
-    }
-
-    public int getTaskIdCounter() {
-        return taskIdCounter;
     }
 
     protected void setStartGenerateTaskId(int taskIdCounter) {
@@ -243,7 +241,7 @@ public class InMemoryTaskManager implements TaskManager {
             throw new InvalidTaskException("Epic не найден.");
         }
         List<Subtask> subtasks = epic.getSubtasks();
-        if (subtasks.isEmpty()) {
+        if (subtasks == null || subtasks.isEmpty()) {
             epic.setDuration(Duration.ZERO);
             epic.setStartTime(null);
             epic.setEndTime(null);

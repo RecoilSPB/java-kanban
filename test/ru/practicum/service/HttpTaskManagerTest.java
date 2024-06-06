@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HttpTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
 
-    private HttpTaskServer server;
+    private static final String URL = "http://localhost:" + HttpTaskServer.PORT;
     static Gson gson;
-    private static final String URL = "http://localhost:"+ HttpTaskServer.PORT;
     HttpClient client;
+    private HttpTaskServer server;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -52,7 +52,6 @@ class HttpTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     @Test
     void addTask() {
         Task newTask = new Task("Test Task", "Test Description", TaskStatus.NEW);
-//        newTask.setId(10);
         String taskJson = gson.toJson(newTask);
 
         URI urlAdd = URI.create(URL + "/tasks/task/");
@@ -64,6 +63,7 @@ class HttpTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         HttpResponse<String> response = send(request);
         int actual = response.statusCode();
         String responseBody = response.body();
+        System.out.println(responseBody);
         Task savedTask = gson.fromJson(responseBody, Task.class);
         assertEquals(201, actual, "Статус добавление Task не 201, получено: " + actual);
         assertEquals(taskManager.getTaskById(5), savedTask, "Вернулся не верный Task");
